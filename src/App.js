@@ -8,7 +8,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/candidates')
+    fetch('/api/candidates')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');

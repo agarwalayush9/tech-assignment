@@ -22,6 +22,9 @@ app.get('/api/candidates', (req, res) => {
   res.json(candidates);
 });
 
+// Export the Express API
+module.exports = app;
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
