@@ -5,6 +5,7 @@ function App() {
   const [candidates, setCandidates] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch('http://localhost:5001/api/candidates')
@@ -14,8 +15,14 @@ function App() {
         }
         return response.json();
       })
-      .then(data => setCandidates(data))
-      .catch(error => console.error('Fetch error:', error));
+      .then(data => {
+        setCandidates(data);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        setIsLoading(false);
+      });
   }, []);
 
   const handleSearch = (event) => {
@@ -41,36 +48,57 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Candidate List</h1>
-        <input
-          type="text"
-          placeholder="Search by Name or Skills"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <button onClick={handleSort}>
-          Sort by Experience ({sortOrder === 'asc' ? 'Ascending' : 'Descending'})
-        </button>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Skills</th>
-              <th>Years of Experience</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCandidates.map(candidate => (
-              <tr key={candidate.id}>
-                <td>{candidate.name}</td>
-                <td>{candidate.skills}</td>
-                <td>{candidate.experience}</td>
+      <nav className="nav-bar">
+        <div className="nav-content">
+          <h1>Candidate List Viewer - by ayush</h1>
+        </div>
+      </nav>
+
+      <div className="container">
+        <div className="search-container">
+          <div className="search-wrapper">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search by name or skills..."
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+            <button 
+              className="sort-button"
+              onClick={handleSort}
+              title={`Sort by Experience (${sortOrder === 'asc' ? 'Ascending' : 'Descending'})`}
+            >
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="loading">Loading...</div>
+        ) : filteredCandidates.length === 0 ? (
+          <div className="no-results">No candidates found</div>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Skills</th>
+                <th>Years of Experience</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </header>
+            </thead>
+            <tbody>
+              {filteredCandidates.map(candidate => (
+                <tr key={candidate.id}>
+                  <td>{candidate.name}</td>
+                  <td>{candidate.skills}</td>
+                  <td>{candidate.experience}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
